@@ -1,0 +1,88 @@
+# Detection rules: AI model download and acquisition activity
+
+rules:
+  - id: AI-010
+    name: HuggingFace Model Download
+    description: Command line references HuggingFace model hub, indicating model download
+    severity: medium
+    category: model_download
+    mitre:
+      tactic: Resource Development
+      technique: T1588
+      subtechnique: T1588.001
+    match:
+      commandline_contains:
+        - huggingface.co
+        - hf.co/
+        - huggingface-cli
+        - from_pretrained
+    tags: [llm, model-download, huggingface]
+
+  - id: AI-011
+    name: Ollama Model Pull
+    description: Ollama pulling/downloading a model from registry
+    severity: medium
+    category: model_download
+    mitre:
+      tactic: Resource Development
+      technique: T1588
+      subtechnique: T1588.001
+    match:
+      commandline_contains:
+        - ollama pull
+        - ollama run
+        - ollama create
+    tags: [llm, model-download, ollama]
+
+  - id: AI-012
+    name: GGUF Model File Reference
+    description: Command line references GGUF model files (quantized LLM format)
+    severity: medium
+    category: model_download
+    mitre:
+      tactic: Resource Development
+      technique: T1588
+    match:
+      commandline_contains:
+        - .gguf
+    tags: [llm, model-download, gguf]
+
+  - id: AI-013
+    name: SafeTensors Model File Reference
+    description: Command line references SafeTensors model files
+    severity: medium
+    category: model_download
+    mitre:
+      tactic: Resource Development
+      technique: T1588
+    match:
+      commandline_contains:
+        - .safetensors
+    tags: [llm, model-download, safetensors]
+
+  - id: AI-014
+    name: Transformers CLI Usage
+    description: HuggingFace transformers-cli or transformers library commands detected
+    severity: medium
+    category: model_download
+    mitre:
+      tactic: Resource Development
+      technique: T1588
+    match:
+      commandline_contains:
+        - transformers-cli
+        - "from transformers import"
+    tags: [llm, model-download, transformers]
+
+  - id: AI-015
+    name: CivitAI Model Download
+    description: Command line references CivitAI model repository
+    severity: medium
+    category: model_download
+    mitre:
+      tactic: Resource Development
+      technique: T1588
+    match:
+      commandline_contains:
+        - civitai.com
+    tags: [llm, model-download, civitai]

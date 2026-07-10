@@ -1,0 +1,78 @@
+# Detection rules: Shadow AI / unauthorized AI usage policy violations
+
+rules:
+  - id: AI-031
+    name: ChatGPT Desktop App Detected
+    description: ChatGPT desktop application running on endpoint
+    severity: low
+    category: shadow_ai
+    mitre:
+      tactic: Execution
+      technique: T1204
+    match:
+      image_contains:
+        - ChatGPT
+        - chatgpt
+    tags: [shadow-ai, chatgpt, desktop-app]
+
+  - id: AI-032
+    name: Claude Desktop App Detected
+    description: Anthropic Claude desktop application running on endpoint
+    severity: low
+    category: shadow_ai
+    mitre:
+      tactic: Execution
+      technique: T1204
+    match:
+      image_contains:
+        - claude
+        - Claude
+    tags: [shadow-ai, claude, desktop-app]
+
+  - id: AI-033
+    name: Copilot CLI or Agent Detected
+    description: GitHub Copilot CLI or AI coding assistant agent detected
+    severity: low
+    category: shadow_ai
+    mitre:
+      tactic: Execution
+      technique: T1059
+    match:
+      commandline_contains:
+        - github-copilot
+        - copilot-cli
+    tags: [shadow-ai, copilot, coding-assistant]
+
+  - id: AI-034
+    name: Stable Diffusion or Image Gen Tool
+    description: AI image generation tool (Stable Diffusion, ComfyUI, AUTOMATIC1111) detected
+    severity: medium
+    category: shadow_ai
+    mitre:
+      tactic: Execution
+      technique: T1059.006
+    match:
+      commandline_contains:
+        - stable-diffusion
+        - stablediffusion
+        - comfyui
+        - ComfyUI
+        - automatic1111
+        - "webui.py"
+        - invoke-ai
+    tags: [shadow-ai, image-generation, stable-diffusion]
+
+  - id: AI-035
+    name: Whisper Speech-to-Text Detected
+    description: OpenAI Whisper or derivatives detected processing audio
+    severity: medium
+    category: shadow_ai
+    mitre:
+      tactic: Collection
+      technique: T1123
+    match:
+      commandline_contains:
+        - whisper
+        - faster-whisper
+        - whisper.cpp
+    tags: [shadow-ai, speech-to-text, whisper]

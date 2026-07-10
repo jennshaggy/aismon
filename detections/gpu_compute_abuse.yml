@@ -1,0 +1,59 @@
+# Detection rules: GPU and compute resource abuse for AI/ML workloads
+
+rules:
+  - id: AI-016
+    name: PyTorch Execution Detected
+    description: Python process invoking PyTorch library, may indicate ML model training or inference
+    severity: low
+    category: gpu_compute
+    mitre:
+      tactic: Execution
+      technique: T1059.006
+    match:
+      commandline_contains:
+        - "import torch"
+        - "from torch"
+        - torch.cuda
+    tags: [ml, gpu, pytorch]
+
+  - id: AI-017
+    name: TensorFlow Execution Detected
+    description: Python process invoking TensorFlow library
+    severity: low
+    category: gpu_compute
+    mitre:
+      tactic: Execution
+      technique: T1059.006
+    match:
+      commandline_contains:
+        - "import tensorflow"
+        - "from tensorflow"
+    tags: [ml, gpu, tensorflow]
+
+  - id: AI-018
+    name: CUDA Toolkit Usage
+    description: NVIDIA CUDA compiler or tools invoked, indicating GPU compute workloads
+    severity: medium
+    category: gpu_compute
+    mitre:
+      tactic: Execution
+      technique: T1059
+    match:
+      image_contains:
+        - nvcc
+        - nvidia-smi
+        - nvcuda
+    tags: [gpu, cuda, compute]
+
+  - id: AI-019
+    name: nvidia-smi GPU Monitoring
+    description: nvidia-smi used to query GPU status, common in ML pipeline scripts
+    severity: low
+    category: gpu_compute
+    mitre:
+      tactic: Discovery
+      technique: T1082
+    match:
+      commandline_contains:
+        - nvidia-smi
+    tags: [gpu, discovery, nvidia]

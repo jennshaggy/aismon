@@ -1,0 +1,107 @@
+# Detection rules: Data exfiltration and suspicious network activity tied to AI usage
+
+rules:
+  - id: AI-026
+    name: AI Tool Spawned from Script Engine
+    description: AI/LLM tool launched by wscript, cscript, or mshta — likely automated or staged execution
+    severity: critical
+    category: exfiltration
+    mitre:
+      tactic: Execution
+      technique: T1059.005
+    match:
+      parent_image_contains:
+        - wscript
+        - cscript
+        - mshta
+      commandline_contains:
+        - ollama
+        - llama
+        - openai
+        - anthropic
+        - huggingface
+        - transformers
+    tags: [staged-execution, script-engine, ai-tool]
+
+  - id: AI-027
+    name: AI Process from Temp Directory
+    description: AI-related process executing from temp or downloads directory
+    severity: high
+    category: exfiltration
+    mitre:
+      tactic: Defense Evasion
+      technique: T1036
+    match:
+      image_contains:
+        - "\\Temp\\"
+        - "\\tmp\\"
+        - "\\Downloads\\"
+      commandline_contains:
+        - ollama
+        - llama
+        - gpt
+        - model
+        - inference
+        - predict
+    tags: [temp-execution, suspicious-location]
+
+  - id: AI-028
+    name: AI Tool with SYSTEM Privileges
+    description: AI/LLM-related process running as SYSTEM or with High integrity — unusual for AI workloads
+    severity: critical
+    category: exfiltration
+    mitre:
+      tactic: Privilege Escalation
+      technique: T1078
+    match:
+      integrity_level:
+        - System
+      commandline_contains:
+        - ollama
+        - llama
+        - openai
+        - anthropic
+        - huggingface
+        - model
+        - inference
+    tags: [privilege-escalation, system-context, ai-tool]
+
+  - id: AI-029
+    name: Curl/Wget to AI API Endpoint
+    description: Network utility sending data to known AI API endpoints
+    severity: high
+    category: exfiltration
+    mitre:
+      tactic: Exfiltration
+      technique: T1048
+    match:
+      image_contains:
+        - curl
+        - wget
+        - Invoke-WebRequest
+        - certutil
+      commandline_contains:
+        - api.openai.com
+        - api.anthropic.com
+        - api.mistral.ai
+        - generativelanguage.googleapis.com
+    tags: [exfiltration, network-utility, ai-api]
+
+  - id: AI-030
+    name: Python Script Calling AI API
+    description: Python process with AI vendor API references in command line
+    severity: medium
+    category: exfiltration
+    mitre:
+      tactic: Exfiltration
+      technique: T1041
+    match:
+      image_contains:
+        - python
+      commandline_contains:
+        - openai
+        - anthropic
+        - langchain
+        - llama_index
+        - autogen
+    tags: [python, ai-api, data-exfiltration]

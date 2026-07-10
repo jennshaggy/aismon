@@ -1,0 +1,45 @@
+<Events>
+  <Event>
+    <System>
+      <Provider Name="Microsoft-Windows-Sysmon" Guid="{5770385f-c22a-43e0-bf4c-06f5698ffbd9}"/>
+      <EventID>1</EventID>
+      <Version>5</Version>
+      <Level>4</Level>
+      <Task>1</Task>
+      <Opcode>0</Opcode>
+      <Keywords>0x8000000000000000</Keywords>
+      <TimeCreated SystemTime="2024-01-15T14:22:11.874532100Z"/>
+      <EventRecordID>18742</EventRecordID>
+      <Correlation/>
+      <Execution ProcessID="1080" ThreadID="2364"/>
+      <Channel>Microsoft-Windows-Sysmon/Operational</Channel>
+      <Computer>WORKSTATION-07</Computer>
+      <Security UserID="S-1-5-21-3623811015-3361044348-30300820-1013"/>
+    </System>
+    <EventData>
+      <Data Name="RuleName">-</Data>
+      <Data Name="UtcTime">2024-01-15 14:22:11.874</Data>
+      <Data Name="ProcessGuid">{a23ef1d2-b7c4-65a5-1300-000000002200}</Data>
+      <Data Name="ProcessId">7340</Data>
+      <Data Name="Image">C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe</Data>
+      <Data Name="FileVersion">10.0.19041.1 (WinBuild.160101.0800)</Data>
+      <Data Name="Description">Windows PowerShell</Data>
+      <Data Name="Product">Microsoft Windows Operating System</Data>
+      <Data Name="Company">Microsoft Corporation</Data>
+      <Data Name="OriginalFileName">PowerShell.EXE</Data>
+      <Data Name="CommandLine">powershell.exe -NoProfile -Command "Get-Process | Sort-Object CPU -Descending | Select-Object -First 10"</Data>
+      <Data Name="CurrentDirectory">C:\Users\jdoe\Documents\</Data>
+      <Data Name="User">WORKSTATION-07\jdoe</Data>
+      <Data Name="LogonGuid">{a23ef1d2-a1b0-65a5-5e4c-090000000000}</Data>
+      <Data Name="LogonId">0x94C5E</Data>
+      <Data Name="TerminalSessionId">1</Data>
+      <Data Name="IntegrityLevel">Medium</Data>
+      <Data Name="Hashes">SHA256=9F914D42706FE215501044ACD85A32D58AAEF1419D404FDDFA5D3B48F66CCD9F</Data>
+      <Data Name="ParentProcessGuid">{a23ef1d2-a2c8-65a5-0c00-000000002200}</Data>
+      <Data Name="ParentProcessId">6120</Data>
+      <Data Name="ParentImage">C:\Windows\System32\cmd.exe</Data>
+      <Data Name="ParentCommandLine">"C:\Windows\System32\cmd.exe"</Data>
+      <Data Name="ParentUser">WORKSTATION-07\jdoe</Data>
+    </EventData>
+  </Event>
+</Events>

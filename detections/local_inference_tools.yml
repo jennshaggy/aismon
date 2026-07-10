@@ -1,0 +1,130 @@
+# Detection rules: Local LLM/AI inference tools running on endpoints
+# These tools may indicate unauthorized local model execution
+
+rules:
+  - id: AI-001
+    name: Ollama Server Detected
+    description: Ollama local LLM server process running on endpoint
+    severity: medium
+    category: local_inference
+    mitre:
+      tactic: Execution
+      technique: T1059
+      subtechnique: T1059.006
+    match:
+      image_contains:
+        - ollama
+    tags: [llm, local-inference, ollama]
+
+  - id: AI-002
+    name: llama.cpp Inference Detected
+    description: llama.cpp or llama-server binary executing local model inference
+    severity: medium
+    category: local_inference
+    mitre:
+      tactic: Execution
+      technique: T1059
+    match:
+      image_contains:
+        - llama-server
+        - llama-cli
+        - llama.cpp
+        - llama-bench
+    tags: [llm, local-inference, llama-cpp]
+
+  - id: AI-003
+    name: KoboldCpp Detected
+    description: KoboldCpp local inference server detected
+    severity: medium
+    category: local_inference
+    mitre:
+      tactic: Execution
+      technique: T1059
+    match:
+      image_contains:
+        - koboldcpp
+    tags: [llm, local-inference, koboldcpp]
+
+  - id: AI-004
+    name: LocalAI Server Detected
+    description: LocalAI inference server running on endpoint
+    severity: medium
+    category: local_inference
+    mitre:
+      tactic: Execution
+      technique: T1059
+    match:
+      image_contains:
+        - local-ai
+        - localai
+    tags: [llm, local-inference, localai]
+
+  - id: AI-005
+    name: vLLM Inference Server Detected
+    description: vLLM high-throughput inference engine detected
+    severity: medium
+    category: local_inference
+    mitre:
+      tactic: Execution
+      technique: T1059.006
+    match:
+      commandline_contains:
+        - vllm.entrypoints
+        - "vllm serve"
+    tags: [llm, local-inference, vllm]
+
+  - id: AI-006
+    name: Text Generation WebUI Detected
+    description: Oobabooga text-generation-webui server detected
+    severity: medium
+    category: local_inference
+    mitre:
+      tactic: Execution
+      technique: T1059.006
+    match:
+      commandline_contains:
+        - text-generation-webui
+        - textgen
+    tags: [llm, local-inference, text-generation-webui]
+
+  - id: AI-007
+    name: LM Studio Detected
+    description: LM Studio desktop LLM application detected
+    severity: low
+    category: local_inference
+    mitre:
+      tactic: Execution
+      technique: T1059
+    match:
+      image_contains:
+        - lm studio
+        - lm-studio
+        - lmstudio
+    tags: [llm, local-inference, lm-studio]
+
+  - id: AI-008
+    name: GPT4All Detected
+    description: GPT4All local model runner detected
+    severity: low
+    category: local_inference
+    mitre:
+      tactic: Execution
+      technique: T1059
+    match:
+      image_contains:
+        - gpt4all
+    tags: [llm, local-inference, gpt4all]
+
+  - id: AI-009
+    name: Jan.ai Detected
+    description: Jan.ai local AI assistant detected
+    severity: low
+    category: local_inference
+    mitre:
+      tactic: Execution
+      technique: T1059
+    match:
+      image_contains:
+        - jan.exe
+        - jan.ai
+    tags: [llm, local-inference, jan-ai]
