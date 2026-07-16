@@ -115,4 +115,8 @@ Verification:
 - Confirmed that credential redaction remains active.
 - Confirmed that `git diff --check` reports no whitespace errors.
 - Scanned public text for the former repository name, em dashes, stock contrast phrasing, and the generated README's rhetorical patterns. No matches remain.
+- Added a least-privilege GitHub Actions workflow with read-only repository permissions.
+- Pinned third-party actions to full commit hashes instead of mutable version tags.
+- Added CI coverage for Python 3.10, 3.12, and 3.14.
+- Raised the documented minimum to Python 3.10 because Python 3.8 and 3.9 are end-of-life.
 - Pending repository rename and link verification after publication.

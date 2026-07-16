@@ -31,7 +31,7 @@ Each match includes a rule ID, description, severity, category, and tags. Severi
 
 ## Requirements
 
-- Python 3.8 or newer
+- Python 3.10 or newer
 - PyYAML 6.x
 
 ## Installation
@@ -164,6 +164,8 @@ python -m pytest
 ```
 
 The current suite contains 69 tests covering XML parsing, Windows namespaces, filtering, credential redaction, rule validation, matching behavior, false-positive cases, and sample-file integration.
+
+GitHub Actions runs the suite on Python 3.10, 3.12, and 3.14 for every pull request and every push to `main`.
 
 ## Current limitations
 
