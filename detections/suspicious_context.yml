@@ -1,0 +1,89 @@
+# Detection rules: AI activity occurring in contexts that merit investigation
+
+rules:
+  - id: AI-026
+    name: AI Activity Spawned by Script Host
+    description: AI-related command line launched by wscript, cscript, or mshta
+    severity: high
+    category: suspicious_context
+    match:
+      parent_image_contains:
+        - wscript
+        - cscript
+        - mshta
+      commandline_contains:
+        - ollama
+        - llama
+        - openai
+        - anthropic
+        - huggingface
+        - transformers
+    tags: [staged-execution, script-engine, ai-tool]
+
+  - id: AI-027
+    name: AI Activity from User-Writable Directory
+    description: AI-related process executes from a temporary or downloads directory
+    severity: medium
+    category: suspicious_context
+    match:
+      image_contains:
+        - "\\Temp\\"
+        - "\\tmp\\"
+        - "\\Downloads\\"
+      commandline_contains:
+        - ollama
+        - llama
+        - gpt
+        - openai
+        - anthropic
+        - huggingface
+    tags: [temp-execution, suspicious-location]
+
+  - id: AI-028
+    name: AI Activity in SYSTEM Context
+    description: AI-related command line executes with SYSTEM integrity
+    severity: high
+    category: suspicious_context
+    match:
+      integrity_level:
+        - System
+      commandline_contains:
+        - ollama
+        - llama
+        - openai
+        - anthropic
+        - huggingface
+    tags: [privilege-escalation, system-context, ai-tool]
+
+  - id: AI-029
+    name: Command-Line Client Accessing AI API
+    description: Command-line network client references a known AI API endpoint
+    severity: medium
+    category: suspicious_context
+    match:
+      image_name:
+        - curl.exe
+        - wget.exe
+        - certutil.exe
+      commandline_contains:
+        - api.openai.com
+        - api.anthropic.com
+        - api.mistral.ai
+        - generativelanguage.googleapis.com
+    tags: [exfiltration, network-utility, ai-api]
+
+  - id: AI-030
+    name: Python AI Client Activity
+    description: Python process command line references an AI client library or framework
+    severity: low
+    category: suspicious_context
+    match:
+      image_contains:
+        - python
+      commandline_contains:
+        - openai
+        - anthropic
+        - langchain
+        - llama_index
+        - autogen
+    tags: [python, ai-api, data-exfiltration]

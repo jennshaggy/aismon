@@ -1,6 +1,6 @@
 import os
 import pytest
-from detector import load_rules, detect, detect_summary, _check_rule
+from detector import load_rules, detect, detect_summary, _check_rule, RuleValidationError
 
 DETECTIONS_DIR = os.path.join(os.path.dirname(__file__), "..", "detections")
 
@@ -21,7 +21,6 @@ class TestLoadRules:
             assert "severity" in rule, f"Rule {rule['id']} missing severity"
             assert "category" in rule, f"Rule {rule['id']} missing category"
             assert "match" in rule, f"Rule {rule['id']} missing match"
-            assert "mitre" in rule, f"Rule {rule['id']} missing mitre"
 
     def test_rule_ids_are_unique(self):
         rules = load_rules()
@@ -34,6 +33,18 @@ class TestLoadRules:
         for rule in rules:
             assert rule["severity"] in valid, f"Rule {rule['id']} has invalid severity: {rule['severity']}"
 
+    def test_detection_output_has_documented_fields(self):
+        event = {"EventID": 1, "Image": "ollama.exe", "CommandLine": "ollama run llama3"}
+        detection = detect([event])[0]["detections"][0]
+        assert set(detection) == {
+            "rule_id",
+            "name",
+            "description",
+            "severity",
+            "category",
+            "tags",
+        }
+
     def test_loads_from_custom_dir(self, tmp_path):
         rule_file = tmp_path / "test.yml"
         rule_file.write_text("""
@@ -43,9 +54,6 @@ rules:
     description: A test
     severity: low
     category: test
-    mitre:
-      tactic: Execution
-      technique: T1059
     match:
       image_contains:
         - test.exe
@@ -53,6 +61,51 @@ rules:
         rules = load_rules(str(tmp_path))
         assert len(rules) == 1
         assert rules[0]["id"] == "TEST-001"
+
+    def test_rejects_unsupported_match_field(self, tmp_path):
+        (tmp_path / "bad.yml").write_text("""
+rules:
+  - id: TEST-001
+    name: Bad field
+    description: A malformed rule
+    severity: low
+    category: test
+    match:
+      imaginary_field:
+        - value
+""")
+        with pytest.raises(RuleValidationError, match="unsupported match fields"):
+            load_rules(str(tmp_path))
+
+    def test_rejects_non_list_match_patterns(self, tmp_path):
+        (tmp_path / "bad.yml").write_text("""
+rules:
+  - id: TEST-001
+    name: Bad patterns
+    description: A malformed rule
+    severity: low
+    category: test
+    match:
+      image_contains: ollama
+""")
+        with pytest.raises(RuleValidationError, match="must be a non-empty list"):
+            load_rules(str(tmp_path))
+
+    def test_rejects_duplicate_ids_at_runtime(self, tmp_path):
+        rule = """
+  - id: TEST-001
+    name: Duplicate
+    description: A duplicate rule
+    severity: low
+    category: test
+    match:
+      image_contains:
+        - ollama
+"""
+        (tmp_path / "one.yml").write_text("rules:\n" + rule)
+        (tmp_path / "two.yml").write_text("rules:\n" + rule)
+        with pytest.raises(RuleValidationError, match="Duplicate rule IDs"):
+            load_rules(str(tmp_path))
 
 
 # --- Detection matching tests ---
@@ -269,6 +322,38 @@ class TestNoFalsePositives:
         event = self._make_event(
             Image=r"C:\Windows\System32\notepad.exe",
             CommandLine="notepad.exe readme.txt",
+        )
+        results = detect([event])
+        assert "detections" not in results[0]
+
+    def test_similar_claude_process_name(self):
+        event = self._make_event(
+            Image=r"C:\Tools\claudette.exe",
+            CommandLine="claudette.exe --serve",
+        )
+        results = detect([event])
+        assert "detections" not in results[0]
+
+    def test_chatgpt_text_in_unrelated_process_path(self):
+        event = self._make_event(
+            Image=r"C:\Tools\chatgpt-notes.exe",
+            CommandLine="chatgpt-notes.exe",
+        )
+        results = detect([event])
+        assert "detections" not in results[0]
+
+    def test_api_key_variable_name_without_value(self):
+        event = self._make_event(
+            Image=r"C:\Windows\System32\cmd.exe",
+            CommandLine="echo OPENAI_API_KEY is not configured",
+        )
+        results = detect([event])
+        assert "detections" not in results[0]
+
+    def test_unrelated_aider_substring(self):
+        event = self._make_event(
+            Image=r"C:\Games\raider.exe",
+            CommandLine="raider.exe --launch",
         )
         results = detect([event])
         assert "detections" not in results[0]
