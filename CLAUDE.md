@@ -46,3 +46,7 @@ python -m pytest tests/test_parser.py -k "test_name"   # run a single test
 ## Detection Rule Format
 
 Each YAML rule file contains a `rules` list. Each rule has: `id`, `name`, `description`, `severity` (low/medium/high/critical), `category`, `mitre` (tactic/technique), and `match` conditions. Match conditions use AND logic and support: `image_contains`, `commandline_contains`, `parent_image_contains`, `integrity_level`.
+
+## Resuming Work
+
+See `STATE.md` for current project status, git state, next steps, and key decisions. See `HANDOFF.md` for a full project summary with rationale behind design choices.
