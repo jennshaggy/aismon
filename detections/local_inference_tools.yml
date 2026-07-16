@@ -7,13 +7,9 @@ rules:
     description: Ollama local LLM server process running on endpoint
     severity: medium
     category: local_inference
-    mitre:
-      tactic: Execution
-      technique: T1059
-      subtechnique: T1059.006
     match:
-      image_contains:
-        - ollama
+      image_name:
+        - ollama.exe
     tags: [llm, local-inference, ollama]
 
   - id: AI-002
@@ -21,15 +17,11 @@ rules:
     description: llama.cpp or llama-server binary executing local model inference
     severity: medium
     category: local_inference
-    mitre:
-      tactic: Execution
-      technique: T1059
     match:
-      image_contains:
-        - llama-server
-        - llama-cli
-        - llama.cpp
-        - llama-bench
+      image_name:
+        - llama-server.exe
+        - llama-cli.exe
+        - llama-bench.exe
     tags: [llm, local-inference, llama-cpp]
 
   - id: AI-003
@@ -37,12 +29,9 @@ rules:
     description: KoboldCpp local inference server detected
     severity: medium
     category: local_inference
-    mitre:
-      tactic: Execution
-      technique: T1059
     match:
-      image_contains:
-        - koboldcpp
+      image_name:
+        - koboldcpp.exe
     tags: [llm, local-inference, koboldcpp]
 
   - id: AI-004
@@ -50,13 +39,10 @@ rules:
     description: LocalAI inference server running on endpoint
     severity: medium
     category: local_inference
-    mitre:
-      tactic: Execution
-      technique: T1059
     match:
-      image_contains:
-        - local-ai
-        - localai
+      image_name:
+        - local-ai.exe
+        - localai.exe
     tags: [llm, local-inference, localai]
 
   - id: AI-005
@@ -64,9 +50,6 @@ rules:
     description: vLLM high-throughput inference engine detected
     severity: medium
     category: local_inference
-    mitre:
-      tactic: Execution
-      technique: T1059.006
     match:
       commandline_contains:
         - vllm.entrypoints
@@ -78,13 +61,9 @@ rules:
     description: Oobabooga text-generation-webui server detected
     severity: medium
     category: local_inference
-    mitre:
-      tactic: Execution
-      technique: T1059.006
     match:
       commandline_contains:
         - text-generation-webui
-        - textgen
     tags: [llm, local-inference, text-generation-webui]
 
   - id: AI-007
@@ -92,14 +71,11 @@ rules:
     description: LM Studio desktop LLM application detected
     severity: low
     category: local_inference
-    mitre:
-      tactic: Execution
-      technique: T1059
     match:
-      image_contains:
-        - lm studio
-        - lm-studio
-        - lmstudio
+      image_name:
+        - LM Studio.exe
+        - lm-studio.exe
+        - lmstudio.exe
     tags: [llm, local-inference, lm-studio]
 
   - id: AI-008
@@ -107,12 +83,9 @@ rules:
     description: GPT4All local model runner detected
     severity: low
     category: local_inference
-    mitre:
-      tactic: Execution
-      technique: T1059
     match:
-      image_contains:
-        - gpt4all
+      image_name:
+        - gpt4all.exe
     tags: [llm, local-inference, gpt4all]
 
   - id: AI-009
@@ -120,11 +93,7 @@ rules:
     description: Jan.ai local AI assistant detected
     severity: low
     category: local_inference
-    mitre:
-      tactic: Execution
-      technique: T1059
     match:
-      image_contains:
+      image_name:
         - jan.exe
-        - jan.ai
     tags: [llm, local-inference, jan-ai]

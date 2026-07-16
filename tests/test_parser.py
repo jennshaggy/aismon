@@ -1,6 +1,6 @@
 import os
 import pytest
-from parser import parse_events, filter_events
+from parser import parse_events, filter_events, redact_secrets
 
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), "..", "samples")
 
@@ -127,6 +127,32 @@ class TestParseEvents:
         with pytest.raises(Exception):
             parse_events(str(xml))
 
+    def test_parses_namespaced_windows_event_xml(self, tmp_path):
+        xml = tmp_path / "windows-export.xml"
+        xml.write_text("""<Events xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <Event>
+    <System><EventID>1</EventID><Computer>REAL-HOST</Computer></System>
+    <EventData>
+      <Data Name="Image">C:\\Tools\\ollama.exe</Data>
+      <Data Name="CommandLine">ollama run llama3</Data>
+      <Data Name="User">REAL-HOST\\analyst</Data>
+    </EventData>
+  </Event>
+</Events>""")
+        events = parse_events(str(xml))
+        assert len(events) == 1
+        assert events[0]["Computer"] == "REAL-HOST"
+        assert events[0]["Image"] == r"C:\Tools\ollama.exe"
+
+    def test_rejects_doctype_and_entity_declarations(self, tmp_path):
+        xml = tmp_path / "entity.xml"
+        xml.write_text("""<?xml version="1.0"?>
+<!DOCTYPE Events [<!ENTITY example "expanded">]>
+<Events><Event><System><EventID>1</EventID></System>
+<EventData><Data Name="Image">&example;</Data></EventData></Event></Events>""")
+        with pytest.raises(Exception, match="DTD and entity declarations are not allowed"):
+            parse_events(str(xml))
+
 
 # --- filter_events tests ---
 
@@ -215,3 +241,20 @@ class TestFilterEvents:
 
     def test_empty_input(self):
         assert filter_events([], image="test") == []
+
+
+class TestSecretRedaction:
+    def test_redacts_openai_key_without_mutating_original(self):
+        event = {"CommandLine": "python agent.py OPENAI_API_KEY=sk-proj-abc123456789"}
+        result = redact_secrets(event)
+        assert result["CommandLine"] == "python agent.py OPENAI_API_KEY=[REDACTED]"
+        assert event["CommandLine"].endswith("sk-proj-abc123456789")
+
+    def test_redacts_bearer_token(self):
+        event = {"CommandLine": "curl -H \"Authorization: Bearer secret.token-value\""}
+        result = redact_secrets(event)
+        assert result["CommandLine"] == 'curl -H "Authorization: Bearer [REDACTED]"'
+
+    def test_preserves_non_secret_command_line(self):
+        event = {"CommandLine": "ollama run llama3"}
+        assert redact_secrets(event) == event

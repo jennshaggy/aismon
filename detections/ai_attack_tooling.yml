@@ -3,12 +3,9 @@
 rules:
   - id: AI-020
     name: AI-Assisted Pentest Tool Detected
-    description: Known AI-assisted penetration testing or exploit frameworks detected
-    severity: high
+    description: Command line references a known AI-assisted security testing framework
+    severity: medium
     category: ai_attack_tooling
-    mitre:
-      tactic: Execution
-      technique: T1059.006
     match:
       commandline_contains:
         - pentestgpt
@@ -21,12 +18,9 @@ rules:
 
   - id: AI-021
     name: Autonomous AI Agent Framework
-    description: Autonomous AI agent framework detected (AutoGPT, AgentGPT, BabyAGI, CrewAI)
-    severity: high
+    description: Command line references an autonomous AI agent framework
+    severity: medium
     category: ai_attack_tooling
-    mitre:
-      tactic: Execution
-      technique: T1059.006
     match:
       commandline_contains:
         - autogpt
@@ -39,34 +33,26 @@ rules:
 
   - id: AI-022
     name: AI Code Generation Tool
-    description: AI code generation tools that could produce malicious code
-    severity: medium
+    description: Command line references an AI-assisted code generation tool
+    severity: low
     category: ai_attack_tooling
-    mitre:
-      tactic: Execution
-      technique: T1059.006
     match:
-      commandline_contains:
+      commandline_words:
         - aider
+        - aider.exe
         - continue.dev
         - cursor-agent
-        - codegen
     tags: [ai-codegen, development]
 
   - id: AI-023
     name: AI API Key in Command Line
-    description: API keys for AI services exposed in command line arguments
+    description: AI service credential appears in process command-line arguments
     severity: critical
     category: ai_attack_tooling
-    mitre:
-      tactic: Credential Access
-      technique: T1552.001
     match:
       commandline_contains:
         - sk-proj-
         - sk-ant-api
-        - OPENAI_API_KEY
-        - ANTHROPIC_API_KEY
     tags: [credential-exposure, api-key]
 
   - id: AI-024
@@ -74,9 +60,6 @@ rules:
     description: Production AI model serving frameworks detected on endpoint
     severity: medium
     category: ai_attack_tooling
-    mitre:
-      tactic: Execution
-      technique: T1059.006
     match:
       commandline_contains:
         - "tritonserver"
@@ -86,13 +69,10 @@ rules:
     tags: [model-serving, ml-infrastructure]
 
   - id: AI-025
-    name: OpenAI/Anthropic API Call in Script
-    description: Script directly calling AI vendor APIs, potential data exfiltration or prompt injection
-    severity: high
+    name: AI Vendor API Reference
+    description: Process command line contains a known AI vendor API endpoint
+    severity: medium
     category: ai_attack_tooling
-    mitre:
-      tactic: Exfiltration
-      technique: T1041
     match:
       commandline_contains:
         - api.openai.com

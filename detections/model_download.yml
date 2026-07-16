@@ -6,10 +6,6 @@ rules:
     description: Command line references HuggingFace model hub, indicating model download
     severity: medium
     category: model_download
-    mitre:
-      tactic: Resource Development
-      technique: T1588
-      subtechnique: T1588.001
     match:
       commandline_contains:
         - huggingface.co
@@ -23,10 +19,6 @@ rules:
     description: Ollama pulling/downloading a model from registry
     severity: medium
     category: model_download
-    mitre:
-      tactic: Resource Development
-      technique: T1588
-      subtechnique: T1588.001
     match:
       commandline_contains:
         - ollama pull
@@ -39,9 +31,6 @@ rules:
     description: Command line references GGUF model files (quantized LLM format)
     severity: medium
     category: model_download
-    mitre:
-      tactic: Resource Development
-      technique: T1588
     match:
       commandline_contains:
         - .gguf
@@ -52,9 +41,6 @@ rules:
     description: Command line references SafeTensors model files
     severity: medium
     category: model_download
-    mitre:
-      tactic: Resource Development
-      technique: T1588
     match:
       commandline_contains:
         - .safetensors
@@ -65,9 +51,6 @@ rules:
     description: HuggingFace transformers-cli or transformers library commands detected
     severity: medium
     category: model_download
-    mitre:
-      tactic: Resource Development
-      technique: T1588
     match:
       commandline_contains:
         - transformers-cli
@@ -79,9 +62,6 @@ rules:
     description: Command line references CivitAI model repository
     severity: medium
     category: model_download
-    mitre:
-      tactic: Resource Development
-      technique: T1588
     match:
       commandline_contains:
         - civitai.com

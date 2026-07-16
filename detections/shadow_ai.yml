@@ -6,13 +6,9 @@ rules:
     description: ChatGPT desktop application running on endpoint
     severity: low
     category: shadow_ai
-    mitre:
-      tactic: Execution
-      technique: T1204
     match:
-      image_contains:
-        - ChatGPT
-        - chatgpt
+      image_name:
+        - ChatGPT.exe
     tags: [shadow-ai, chatgpt, desktop-app]
 
   - id: AI-032
@@ -20,13 +16,9 @@ rules:
     description: Anthropic Claude desktop application running on endpoint
     severity: low
     category: shadow_ai
-    mitre:
-      tactic: Execution
-      technique: T1204
     match:
-      image_contains:
-        - claude
-        - Claude
+      image_name:
+        - Claude.exe
     tags: [shadow-ai, claude, desktop-app]
 
   - id: AI-033
@@ -34,9 +26,6 @@ rules:
     description: GitHub Copilot CLI or AI coding assistant agent detected
     severity: low
     category: shadow_ai
-    mitre:
-      tactic: Execution
-      technique: T1059
     match:
       commandline_contains:
         - github-copilot
@@ -48,9 +37,6 @@ rules:
     description: AI image generation tool (Stable Diffusion, ComfyUI, AUTOMATIC1111) detected
     severity: medium
     category: shadow_ai
-    mitre:
-      tactic: Execution
-      technique: T1059.006
     match:
       commandline_contains:
         - stable-diffusion
@@ -67,12 +53,10 @@ rules:
     description: OpenAI Whisper or derivatives detected processing audio
     severity: medium
     category: shadow_ai
-    mitre:
-      tactic: Collection
-      technique: T1123
     match:
       commandline_contains:
-        - whisper
+        - whisper.exe
+        - "python -m whisper"
         - faster-whisper
         - whisper.cpp
     tags: [shadow-ai, speech-to-text, whisper]
