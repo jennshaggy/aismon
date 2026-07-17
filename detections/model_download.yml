@@ -16,14 +16,12 @@ rules:
 
   - id: AI-011
     name: Ollama Model Pull
-    description: Ollama pulling/downloading a model from registry
+    description: Ollama pull command requests a model from the registry
     severity: medium
     category: model_download
     match:
       commandline_contains:
         - ollama pull
-        - ollama run
-        - ollama create
     tags: [llm, model-download, ollama]
 
   - id: AI-012

@@ -126,6 +126,16 @@ class TestDetectionMatching:
         results = detect([event])
         rule_ids = [d["rule_id"] for d in results[0].get("detections", [])]
         assert "AI-001" in rule_ids
+        assert "AI-011" not in rule_ids
+
+    def test_detects_ollama_model_pull(self):
+        event = self._make_event(
+            Image=r"C:\\Users\\user\\AppData\\Local\\Programs\\ollama\\ollama.exe",
+            CommandLine="ollama pull llama2",
+        )
+        results = detect([event])
+        rule_ids = [d["rule_id"] for d in results[0].get("detections", [])]
+        assert "AI-001" in rule_ids
         assert "AI-011" in rule_ids
 
     def test_detects_llama_cpp(self):
@@ -410,6 +420,7 @@ class TestSampleFileDetections:
         assert "detections" in results[0]
         rule_ids = [d["rule_id"] for d in results[0]["detections"]]
         assert "AI-001" in rule_ids
+        assert "AI-011" not in rule_ids
 
     def test_event_exfil_ai_multi_detections(self):
         from parser import parse_events
