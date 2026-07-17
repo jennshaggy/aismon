@@ -120,3 +120,25 @@ Verification:
 - Added CI coverage for Python 3.10, 3.12, and 3.14.
 - Raised the documented minimum to Python 3.10 because Python 3.8 and 3.9 are end-of-life.
 - Pending repository rename and link verification after publication.
+
+## Pass 4: Demonstration Calibration
+
+Status: Complete
+
+Changes:
+
+- Renamed the GitHub repository from `sysmon-parser` to `aismon`.
+- Rebuilt the local development environment after the directory rename.
+- Ran all six supplied samples with detection-only output.
+- Restricted the Ollama model-pull rule to the explicit `ollama pull` command.
+- Removed behavior labels that process-creation telemetry does not prove from three suspicious-context rules.
+
+Verification:
+
+- Confirmed that all 69 existing tests pass on macOS with Python 3.14 before calibration.
+- Confirmed that the three baseline samples produce no AI detections.
+- Confirmed that the Ollama sample produces a local-inference detection without claiming a model download.
+- Confirmed that an explicit `ollama pull` command still triggers the model-download rule.
+- Confirmed that the AutoGPT sample detects framework activity and credential exposure while redacting the credential.
+- Confirmed that the API sample produces five contextual findings while redacting its bearer token.
+- Confirmed that GitHub Actions passes on Python 3.10, 3.12, and 3.14.

@@ -53,7 +53,7 @@ rules:
         - openai
         - anthropic
         - huggingface
-    tags: [privilege-escalation, system-context, ai-tool]
+    tags: [privileged-context, system-context, ai-tool]
 
   - id: AI-029
     name: Command-Line Client Accessing AI API
@@ -70,7 +70,7 @@ rules:
         - api.anthropic.com
         - api.mistral.ai
         - generativelanguage.googleapis.com
-    tags: [exfiltration, network-utility, ai-api]
+    tags: [api-access, network-utility, ai-api]
 
   - id: AI-030
     name: Python AI Client Activity
@@ -86,4 +86,4 @@ rules:
         - langchain
         - llama_index
         - autogen
-    tags: [python, ai-api, data-exfiltration]
+    tags: [python, ai-api, ai-client]
