@@ -221,8 +221,12 @@ class TestDetectionMatching:
             CommandLine="python chat.py --endpoint https://api.anthropic.com/v1/messages",
         )
         results = detect([event])
-        rule_ids = [d["rule_id"] for d in results[0].get("detections", [])]
-        assert "AI-025" in rule_ids
+        detection = next(
+            d for d in results[0].get("detections", []) if d["rule_id"] == "AI-025"
+        )
+        assert detection["severity"] == "low"
+        assert detection["category"] == "ai_api_activity"
+        assert detection["tags"] == ["api-reference", "ai-vendor"]
 
     # Exfiltration patterns
     def test_detects_curl_to_ai_api(self):
