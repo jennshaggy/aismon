@@ -23,7 +23,7 @@ The repository contains 35 rules across six categories.
 | Local inference | Ollama, llama.cpp, vLLM, KoboldCpp, LM Studio, GPT4All |
 | Model acquisition | Hugging Face references, Ollama pulls, GGUF, SafeTensors, CivitAI |
 | GPU and compute activity | PyTorch, TensorFlow, CUDA, `nvidia-smi` |
-| AI security and agent tooling | PentestGPT, AutoGPT, CrewAI, AI service credentials in command lines |
+| AI tooling and API activity | PentestGPT, AutoGPT, CrewAI, AI service credentials and vendor API references |
 | Suspicious context | Script-host parent processes, SYSTEM integrity, user-writable directories, command-line AI API access |
 | Shadow AI indicators | ChatGPT, Claude Desktop, Copilot CLI, Stable Diffusion, Whisper |
 
@@ -102,7 +102,7 @@ The supplied `event_exfil_ai.xml` fixture describes `curl.exe` accessing an AI A
   "name": "AI API Key in Command Line",
   "description": "AI service credential appears in process command-line arguments",
   "severity": "critical",
-  "category": "ai_attack_tooling",
+  "category": "ai_tooling",
   "tags": [
     "credential-exposure",
     "api-key"
@@ -163,7 +163,7 @@ python -m pip install -r requirements-dev.txt
 python -m pytest
 ```
 
-The current suite contains 69 tests covering XML parsing, Windows namespaces, filtering, credential redaction, rule validation, matching behavior, false-positive cases, and sample-file integration.
+The current suite contains 70 tests covering XML parsing, Windows namespaces, filtering, credential redaction, rule validation, matching behavior, false-positive cases, and sample-file integration.
 
 GitHub Actions runs the suite on Python 3.10, 3.12, and 3.14 for every pull request and every push to `main`.
 

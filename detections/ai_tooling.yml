@@ -1,11 +1,11 @@
-# Detection rules: AI-powered offensive tools and autonomous agents
+# Detection rules: AI tools, autonomous agents, credentials, and API references
 
 rules:
   - id: AI-020
     name: AI-Assisted Pentest Tool Detected
     description: Command line references a known AI-assisted security testing framework
     severity: medium
-    category: ai_attack_tooling
+    category: ai_tooling
     match:
       commandline_contains:
         - pentestgpt
@@ -20,7 +20,7 @@ rules:
     name: Autonomous AI Agent Framework
     description: Command line references an autonomous AI agent framework
     severity: medium
-    category: ai_attack_tooling
+    category: ai_tooling
     match:
       commandline_contains:
         - autogpt
@@ -35,7 +35,7 @@ rules:
     name: AI Code Generation Tool
     description: Command line references an AI-assisted code generation tool
     severity: low
-    category: ai_attack_tooling
+    category: ai_tooling
     match:
       commandline_words:
         - aider
@@ -48,7 +48,7 @@ rules:
     name: AI API Key in Command Line
     description: AI service credential appears in process command-line arguments
     severity: critical
-    category: ai_attack_tooling
+    category: ai_tooling
     match:
       commandline_contains:
         - sk-proj-
@@ -59,7 +59,7 @@ rules:
     name: AI Model Serving Framework
     description: Production AI model serving frameworks detected on endpoint
     severity: medium
-    category: ai_attack_tooling
+    category: ai_tooling
     match:
       commandline_contains:
         - "tritonserver"
@@ -71,8 +71,8 @@ rules:
   - id: AI-025
     name: AI Vendor API Reference
     description: Process command line contains a known AI vendor API endpoint
-    severity: medium
-    category: ai_attack_tooling
+    severity: low
+    category: ai_api_activity
     match:
       commandline_contains:
         - api.openai.com
@@ -80,4 +80,4 @@ rules:
         - api.mistral.ai
         - api.cohere.ai
         - generativelanguage.googleapis.com
-    tags: [api-call, data-exfiltration, ai-vendor]
+    tags: [api-reference, ai-vendor]
