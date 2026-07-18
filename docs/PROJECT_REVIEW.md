@@ -142,3 +142,37 @@ Verification:
 - Confirmed that the AutoGPT sample detects framework activity and credential exposure while redacting the credential.
 - Confirmed that the API sample produces five contextual findings while redacting its bearer token.
 - Confirmed that GitHub Actions passes on Python 3.10, 3.12, and 3.14.
+
+## Pass 5: Live Windows and Splunk Validation
+
+Status: Complete
+
+Changes:
+
+- Installed Microsoft Sysmon 15.21 on a Windows 11 home-lab endpoint.
+- Confirmed that the Sysmon service records Event ID 1 process-creation telemetry.
+- Generated a harmless command line containing a fake credential-like value and a known AI vendor endpoint.
+- Exported recent Event ID 1 records with `wevtutil`.
+- Identified the export as UTF-16LE and added the root element required for well-formed multi-event XML.
+- Parsed the live endpoint telemetry with `aismon`.
+- Saved the corrected detection output as JSON and ingested it into a dedicated Splunk index.
+- Saved an SPL report that presents endpoint, process, redaction, rule, severity, and category fields.
+- Documented the repeatable workflow in `docs/HOME_LAB_DEMO.md`.
+
+Calibration:
+
+- The live event initially labeled an AI API reference as medium-severity attack tooling with a data-exfiltration tag.
+- Reclassified AI vendor API references as low-severity `ai_api_activity` observations.
+- Replaced the `data-exfiltration` tag with `api-reference` and `ai-vendor`.
+- Renamed the broader `ai_attack_tooling` category and rule file to `ai_tooling`.
+- Corrected the README from six to seven output categories after separating AI API activity.
+
+Verification:
+
+- Confirmed that all 70 tests pass on macOS with Python 3.14.
+- Confirmed that GitHub Actions passes on Python 3.10, 3.12, and 3.14.
+- Confirmed that live Sysmon XML produces rule `AI-025`.
+- Confirmed that the live finding reports severity `low` and category `ai_api_activity`.
+- Confirmed that the fake credential-like value is replaced with `[REDACTED]` before output.
+- Confirmed that Splunk parses the JSON and extracts the nested detection fields.
+- Confirmed that the temporary SMB share and duplicate Windows transfer files were removed after use.
