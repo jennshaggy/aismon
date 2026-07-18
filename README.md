@@ -8,22 +8,24 @@ The tool reports observable activity. A match does not determine whether the act
 
 ## Project origin
 
-This project began with a Sysmon parser assignment in the AI Cyber Defense Ops course provided by Just Hacking Training through the Women in CyberSecurity Cyber Competency Builder program.
+This project began as a Sysmon parser assignment in Just Hacking Training’s (JHT) AI Cyber Defense Ops course, offered through the Women in CyberSecurity (WiCyS) Cyber Competency Builder program in partnership with JHT.
 
 The initial prototype was built iteratively with Claude Code. I expanded the assignment into an AI activity detector, then reviewed the code, corrected its handling of real Windows Event XML, hardened its inputs, recalibrated the detection logic, and added tests for security and false-positive cases.
 
 The review history is documented in [`docs/PROJECT_REVIEW.md`](docs/PROJECT_REVIEW.md).
+A reproducible Windows-to-Splunk demonstration is documented in [`docs/HOME_LAB_DEMO.md`](docs/HOME_LAB_DEMO.md).
 
 ## What it detects
 
-The repository contains 35 rules across six categories.
+The repository contains 35 rules across seven output categories.
 
 | Category | Examples |
 |---|---|
 | Local inference | Ollama, llama.cpp, vLLM, KoboldCpp, LM Studio, GPT4All |
 | Model acquisition | Hugging Face references, Ollama pulls, GGUF, SafeTensors, CivitAI |
 | GPU and compute activity | PyTorch, TensorFlow, CUDA, `nvidia-smi` |
-| AI tooling and API activity | PentestGPT, AutoGPT, CrewAI, AI service credentials and vendor API references |
+| AI tooling | PentestGPT, AutoGPT, CrewAI, AI service credentials in command lines |
+| AI API activity | Known AI vendor API references |
 | Suspicious context | Script-host parent processes, SYSTEM integrity, user-writable directories, command-line AI API access |
 | Shadow AI indicators | ChatGPT, Claude Desktop, Copilot CLI, Stable Diffusion, Whisper |
 
